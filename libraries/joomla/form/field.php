@@ -435,7 +435,8 @@ abstract class JFormField
 		$id = preg_replace('#\W#', '_', $id);
 
 		// $$$ rob
-		if ($this->repeat) {
+		if ($this->repeat)
+		{
 			$repeatCounter = empty($this->form->repeatCounter) ? 0 : $this->form->repeatCounter;
 			$id .= "-".$repeatCounter;
 		}

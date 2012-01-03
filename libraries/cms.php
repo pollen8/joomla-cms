@@ -28,5 +28,5 @@ if (!defined('JVERSION')) {
 }
 
 // Register location of form fields and rules
-//JForm::addFieldPath(JPATH_PLATFORM . '/cms/form/field');
-//JForm::addRulePath(JPATH_PLATFORM . '/cms/form/rule');
+JForm::addFieldPath(JPATH_PLATFORM . '/cms/form/field');
+JForm::addRulePath(JPATH_PLATFORM . '/cms/form/rule');

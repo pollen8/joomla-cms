@@ -173,9 +173,6 @@ class JAdministrator extends JApplication
 	 */
 	public function render()
 	{
-		JForm::addFieldPath(JPATH_PLATFORM . '/cms/form/field');
-		JForm::addRulePath(JPATH_PLATFORM . '/cms/form/rule');
-		
 		$component	= JRequest::getCmd('option', 'com_login');
 		$template	= $this->getTemplate(true);
 		$file		= JRequest::getCmd('tmpl', 'index');

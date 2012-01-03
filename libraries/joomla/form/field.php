@@ -108,6 +108,14 @@ abstract class JFormField
 	protected $multiple = false;
 
 	/**
+	* Is the element repeatable
+	*
+	* @var    boolean
+	* @since  ?.?
+	*/
+	public $repeat = false;
+	
+	/**
 	 * The name of the form field.
 	 *
 	 * @var    string
@@ -238,6 +246,7 @@ abstract class JFormField
 			case 'value':
 			case 'fieldname':
 			case 'group':
+			case 'repeat':
 				return $this->$name;
 				break;
 
@@ -319,6 +328,7 @@ abstract class JFormField
 		$multiple = (string) $element['multiple'];
 		$name = (string) $element['name'];
 		$required = (string) $element['required'];
+		$repeat		= (string) $element['repeat'];
 
 		// Set the required and validation options.
 		$this->required = ($required == 'true' || $required == 'required' || $required == '1');
@@ -342,6 +352,8 @@ abstract class JFormField
 
 		// Set the multiple values option.
 		$this->multiple = ($multiple == 'true' || $multiple == 'multiple');
+		
+		$this->repeat = ($repeat == 'true' || $repeat == 'multiple' || $this->form->repeat == 1);
 
 		// Allow for field classes to force the multiple values option.
 		if (isset($this->forceMultiple))
@@ -422,6 +434,12 @@ abstract class JFormField
 		// Clean up any invalid characters.
 		$id = preg_replace('#\W#', '_', $id);
 
+		// $$$ rob
+		if ($this->repeat) {
+			$repeatCounter = empty($this->form->repeatCounter) ? 0 : $this->form->repeatCounter;
+			$id .= "-".$repeatCounter;
+		}
+		
 		return $id;
 	}
 
@@ -521,6 +539,7 @@ abstract class JFormField
 	 */
 	protected function getName($fieldName)
 	{
+		$repeatCounter = empty($this->form->repeatCounter) ? 0 : $this->form->repeatCounter;
 		// Initialise variables.
 		$name = '';
 
@@ -560,6 +579,11 @@ abstract class JFormField
 		else
 		{
 			$name .= $fieldName;
+		}
+		
+		if ($this->repeat)
+		{
+			$name .= '[' . $repeatCounter . ']';
 		}
 
 		// If the field should support multiple values add the final array segment.

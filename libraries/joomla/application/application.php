@@ -326,6 +326,8 @@ class JApplication extends JObject
 	 */
 	public function render()
 	{
+		JForm::addFieldPath(JPATH_PLATFORM . '/cms/form/field');
+		JForm::addRulePath(JPATH_PLATFORM . '/cms/form/rule');
 		$params = array('template' => $this->getTemplate(), 'file' => 'index.php', 'directory' => JPATH_THEMES, 'params' => $template->params);
 
 		// Parse the document.

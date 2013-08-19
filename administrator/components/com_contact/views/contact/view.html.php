@@ -29,7 +29,7 @@ class ContactViewContact extends JViewLegacy
 	 */
 	public function display($tpl = null)
 	{
-		// Initialiase variables.
+		// Initialise variables.
 		$this->form		= $this->get('Form');
 		$this->item		= $this->get('Item');
 		$this->state	= $this->get('State');
@@ -39,6 +39,12 @@ class ContactViewContact extends JViewLegacy
 		{
 			JError::raiseError(500, implode("\n", $errors));
 			return false;
+		}
+
+		if ($this->getLayout() == 'modal')
+		{
+			$this->form->setFieldAttribute('language', 'readonly', 'true');
+			$this->form->setFieldAttribute('catid', 'readonly', 'true');
 		}
 
 		$this->addToolbar();

@@ -23,7 +23,7 @@ $app = JFactory::getApplication();
 <body>
 <jdoc:include type="message" />
 	<div id="frame" class="outline">
-		<?php if ($app->getCfg('offline_image')) : ?>
+		<?php if ($app->getCfg('offline_image') && file_exists($app->getCfg('offline_image'))) : ?>
 		<img src="<?php echo $app->getCfg('offline_image'); ?>" alt="<?php echo htmlspecialchars($app->getCfg('sitename')); ?>" />
 		<?php endif; ?>
 		<h1>
@@ -55,7 +55,7 @@ $app = JFactory::getApplication();
 		<input type="submit" name="Submit" class="button" value="<?php echo JText::_('JLOGIN') ?>" />
 		<input type="hidden" name="option" value="com_users" />
 		<input type="hidden" name="task" value="user.login" />
-		<input type="hidden" name="return" value="<?php echo base64_encode(JURI::base()) ?>" />
+		<input type="hidden" name="return" value="<?php echo base64_encode(JUri::base()) ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</fieldset>
 	</form>

@@ -19,11 +19,28 @@ defined('_JEXEC') or die;
 class ConfigModelComponent extends JModelForm
 {
 	/**
+	 * The event to trigger before saving the data.
+	 *
+	 * @var    string
+	 * @since  3.1.0
+	 */
+	protected $event_before_save = 'onConfigurationBeforeSave';
+
+	/**
+	 * The event to trigger before deleting the data.
+	 *
+	 * @var    string
+	 * @since  3.1.0
+	 */
+	protected $event_after_save = 'onConfigurationAfterSave';
+
+	/**
 	 * Method to auto-populate the model state.
 	 *
 	 * Note. Calling getState in this method will result in recursion.
 	 *
 	 * @return  void
+	 *
 	 * @since   1.6
 	 */
 	protected function populateState()
@@ -46,10 +63,11 @@ class ConfigModelComponent extends JModelForm
 	/**
 	 * Method to get a form object.
 	 *
-	 * @param   array  $data		Data for the form.
-	 * @param   boolean	$loadData	True if the form is to load its own data (default case), false if not.
+	 * @param   array    $data      Data for the form.
+	 * @param   boolean  $loadData  True if the form is to load its own data (default case), false if not.
 	 *
-	 * @return  mixed  A JForm object on success, false on failure
+	 * @return  mixed    A JForm object on success, false on failure
+	 *
 	 * @since   1.6
 	 */
 	public function getForm($data = array(), $loadData = true)
@@ -62,17 +80,17 @@ class ConfigModelComponent extends JModelForm
 		else
 		{
 			// Add the search path for the admin component config.xml file.
-			JForm::addFormPath(JPATH_ADMINISTRATOR.'/components/'.$this->getState('component.option'));
+			JForm::addFormPath(JPATH_ADMINISTRATOR . '/components/' . $this->getState('component.option'));
 		}
 
 		// Get the form.
 		$form = $this->loadForm(
-				'com_config.component',
-				'config',
-				array('control' => 'jform', 'load_data' => $loadData),
-				false,
-				'/config'
-			);
+			'com_config.component',
+			'config',
+			array('control' => 'jform', 'load_data' => $loadData),
+			false,
+			'/config'
+		);
 
 		if (empty($form))
 		{
@@ -86,6 +104,7 @@ class ConfigModelComponent extends JModelForm
 	 * Get the component information.
 	 *
 	 * @return  object
+	 *
 	 * @since   1.6
 	 */
 	function getComponent()
@@ -94,12 +113,14 @@ class ConfigModelComponent extends JModelForm
 
 		// Load common and local language files.
 		$lang = JFactory::getLanguage();
-			$lang->load($option, JPATH_BASE, null, false, false)
-		||	$lang->load($option, JPATH_BASE . "/components/$option", null, false, false)
-		||	$lang->load($option, JPATH_BASE, $lang->getDefault(), false, false)
-		||	$lang->load($option, JPATH_BASE . "/components/$option", $lang->getDefault(), false, false);
+		$lang->load($option, JPATH_BASE, null, false, false)
+		|| $lang->load($option, JPATH_BASE . "/components/$option", null, false, false)
+		|| $lang->load($option, JPATH_BASE, $lang->getDefault(), false, false)
+		|| $lang->load($option, JPATH_BASE . "/components/$option", $lang->getDefault(), false, false);
 
 		$result = JComponentHelper::getComponent($option);
+
+		$this->preprocessData('com_config.component', $result);
 
 		return $result;
 	}
@@ -107,24 +128,27 @@ class ConfigModelComponent extends JModelForm
 	/**
 	 * Method to save the configuration data.
 	 *
-	 * @param   array  An array containing all global config data.
+	 * @param   array  $data  An array containing all global config data.
 	 *
-	 * @return  bool	True on success, false on failure.
+	 * @return  bool   True on success, false on failure.
+	 *
 	 * @since   1.6
 	 */
 	public function save($data)
 	{
-		$table	= JTable::getInstance('extension');
+		$dispatcher = JDispatcher::getInstance();
+		$table = JTable::getInstance('extension');
+		$isNew = true;
 
 		// Save the rules.
 		if (isset($data['params']) && isset($data['params']['rules']))
 		{
-			$rules	= new JAccessRules($data['params']['rules']);
-			$asset	= JTable::getInstance('asset');
+			$rules = new JAccessRules($data['params']['rules']);
+			$asset = JTable::getInstance('asset');
 
 			if (!$asset->loadByName($data['option']))
 			{
-				$root	= JTable::getInstance('asset');
+				$root = JTable::getInstance('asset');
 				$root->loadByName('root.1');
 				$asset->name = $data['option'];
 				$asset->title = $data['option'];
@@ -166,6 +190,15 @@ class ConfigModelComponent extends JModelForm
 			return false;
 		}
 
+		// Trigger the onConfigurationBeforeSave event.
+		$result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, $table, $isNew));
+
+		if (in_array(false, $result, true))
+		{
+			$this->setError($table->getError());
+			return false;
+		}
+
 		// Store the data.
 		if (!$table->store())
 		{
@@ -175,6 +208,9 @@ class ConfigModelComponent extends JModelForm
 
 		// Clean the component cache.
 		$this->cleanCache('_system');
+
+		// Trigger the onConfigurationAfterSave event.
+		$dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, $table, $isNew));
 
 		return true;
 	}

@@ -9,8 +9,7 @@
 
 defined('_JEXEC') or die;
 
-JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
-JHtml::_('behavior.tooltip');
+JHtml::addIncludePath(JPATH_COMPONENT . '/helpers/html');
 JHtml::_('behavior.formvalidation');
 JHtml::_('formbehavior.chosen', 'select');
 ?>
@@ -46,24 +45,30 @@ JHtml::_('formbehavior.chosen', 'select');
 </script>
 
 <form action="<?php echo JRoute::_('index.php?option=com_banners&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="banner-form" class="form-validate form-horizontal">
+
+<?php echo JLayoutHelper::render('joomla.edit.item_title', $this); ?>
+
 <!-- Begin Banner -->
 <div class="span10 form-horizontal">
 
 	<fieldset>
-		<ul class="nav nav-tabs">
-			<li class="active"><a href="#details" data-toggle="tab"><?php echo JText::_('COM_BANNERS_BANNER_DETAILS');?></a></li>
-			<li><a href="#publishing" data-toggle="tab"><?php echo JText::_('COM_BANNERS_GROUP_LABEL_PUBLISHING_DETAILS');?></a></li>
-			<li><a href="#otherparams" data-toggle="tab"><?php echo JText::_('COM_BANNERS_GROUP_LABEL_BANNER_DETAILS');?></a></li>
-			<li><a href="#metadata" data-toggle="tab"><?php echo JText::_('JGLOBAL_FIELDSET_METADATA_OPTIONS');?></a></li>
-		</ul>
-		<div class="tab-content">
-			<div class="tab-pane active" id="details">
+		<?php echo JHtml::_('bootstrap.startTabSet', 'myTab', array('active' => 'details')); ?>
+
+			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'details', JText::_('COM_BANNERS_BANNER_DETAILS', true)); ?>
 				<div class="control-group">
 					<div class="control-label">
 						<?php echo $this->form->getLabel('name'); ?>
 					</div>
 					<div class="controls">
 						<?php echo $this->form->getInput('name'); ?>
+					</div>
+				</div>
+				<div class="control-group">
+					<div class="control-label">
+						<?php echo $this->form->getLabel('list_search_elements'); ?>
+					</div>
+					<div class="controls">
+						<?php echo $this->form->getInput('list_search_elements'); ?>
 					</div>
 				</div>
 				<div class="control-group">
@@ -82,7 +87,6 @@ JHtml::_('formbehavior.chosen', 'select');
 						<?php echo $this->form->getInput('catid'); ?>
 					</div>
 				</div>
-
 				<div class="control-group">
 					<div class="control-label">
 						<?php echo $this->form->getLabel('type'); ?>
@@ -135,8 +139,9 @@ JHtml::_('formbehavior.chosen', 'select');
 						<?php echo $this->form->getInput('id'); ?>
 					</div>
 				</div>
-			</div>
-			<div class="tab-pane" id="publishing">
+			<?php echo JHtml::_('bootstrap.endTab'); ?>
+
+			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'publishing', JText::_('COM_BANNERS_GROUP_LABEL_PUBLISHING_DETAILS', true)); ?>
 				<?php foreach ($this->form->getFieldset('publish') as $field) : ?>
 					<div class="control-group">
 						<div class="control-label">
@@ -147,8 +152,9 @@ JHtml::_('formbehavior.chosen', 'select');
 						</div>
 					</div>
 				<?php endforeach; ?>
-			</div>
-			<div class="tab-pane" id="otherparams">
+			<?php echo JHtml::_('bootstrap.endTab'); ?>
+
+			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'otherparams', JText::_('COM_BANNERS_GROUP_LABEL_BANNER_DETAILS', true)); ?>
 				<?php foreach ($this->form->getFieldset('otherparams') as $field) : ?>
 					<div class="control-group">
 						<div class="control-label">
@@ -159,9 +165,9 @@ JHtml::_('formbehavior.chosen', 'select');
 						</div>
 					</div>
 				<?php endforeach; ?>
-			</div>
-			<div class="tab-pane" id="metadata">
+			<?php echo JHtml::_('bootstrap.endTab'); ?>
 
+			<?php echo JHtml::_('bootstrap.addTab', 'myTab', 'metadata', JText::_('JGLOBAL_FIELDSET_METADATA_OPTIONS', true)); ?>
 				<?php foreach ($this->form->getFieldset('metadata') as $field) : ?>
 					<div class="control-group">
 						<div class="control-label">
@@ -172,8 +178,9 @@ JHtml::_('formbehavior.chosen', 'select');
 						</div>
 					</div>
 				<?php endforeach; ?>
-			</div>
-		</div>
+			<?php echo JHtml::_('bootstrap.endTab'); ?>
+
+		<?php echo JHtml::_('bootstrap.endTabSet'); ?>
 	</fieldset>
 
 	<input type="hidden" name="task" value="" />

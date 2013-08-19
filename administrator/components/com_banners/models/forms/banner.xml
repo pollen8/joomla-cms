@@ -7,6 +7,24 @@
 			readonly="true" class="readonly"
 			label="JGLOBAL_FIELD_ID_LABEL" 	description ="JGLOBAL_FIELD_ID_DESC" />
 
+		<field name="list_search_elements"
+			type="repeatable"
+			icon="list"
+			label="modal"
+			description="modal desc"
+		>
+			<fields name="params">
+				<fieldset modal="true" name="list_search_elements_modal" repeat="true">
+					<field name="search_elements"
+						label="label"
+						description="COM_FABRIK_SEARCH_ELEMENTS_LABEL_DESC"
+						size="30"
+						type="field"
+					/>
+				</fieldset>
+			</fields>
+		</field>
+			
 		<field name="name" type="text" class="inputbox"
 			size="40" label="COM_BANNERS_FIELD_NAME_LABEL"
 			description="COM_BANNERS_FIELD_NAME_DESC" required="true" />
@@ -20,7 +38,6 @@
 			class="inputbox" required="true"
 			addfieldpath="/administrator/components/com_categories/models/fields"
 	>
-		>
 		</field>
 		<field name="state" type="list"
 			label="JSTATUS" description="COM_BANNERS_FIELD_STATE_DESC"

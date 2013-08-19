@@ -70,6 +70,13 @@ class JForm
 	protected static $forms = array();
 
 	/**
+	 * Alows extensions to implement repeating elements
+	 * @var    mixed
+	 * @since  11.1
+	 */
+	public $repeat = false;
+
+	/**
 	 * Method to instantiate the form object.
 	 *
 	 * @param   string  $name     The name of the form.
@@ -1223,7 +1230,7 @@ class JForm
 			case 'URL':
 				if (empty($value))
 				{
-					return;
+					return false;
 				}
 				$value = JFilterInput::getInstance()->clean($value, 'html');
 				$value = trim($value);
@@ -1241,7 +1248,7 @@ class JForm
 					// If it looks like an internal link, then add the root.
 					if (substr($value, 0) == 'index.php')
 					{
-						$value = JURI::root() . $value;
+						$value = JUri::root() . $value;
 					}
 
 					// Otherwise we treat it is an external link.
@@ -1252,7 +1259,7 @@ class JForm
 				// If relative URLS are allowed we assume that URLs without protocols are internal.
 				elseif (!$protocol && $element['relative'])
 				{
-					$host = JURI::getInstance('SERVER')->gethost();
+					$host = JUri::getInstance('SERVER')->gethost();
 
 					// If it starts with the host string, just prepend the protocol.
 					if (substr($value, 0) == $host)
@@ -1262,7 +1269,7 @@ class JForm
 					// Otherwise prepend the root.
 					else
 					{
-						$value = JURI::root() . $value;
+						$value = JUri::root() . $value;
 					}
 				}
 
@@ -1477,9 +1484,10 @@ class JForm
 		/*
 		 * Get an array of <field /> elements that are underneath a <fieldset /> element
 		 * with the appropriate name attribute, and also any <field /> elements with
-		 * the appropriate fieldset attribute.
+		 * the appropriate fieldset attribute. To allow repeatable elements only immediate
+		 * field descendants of the fieldset are selected.
 		 */
-		$fields = $this->xml->xpath('//fieldset[@name="' . $name . '"]//field | //field[@fieldset="' . $name . '"]');
+		$fields = $this->xml->xpath('//fieldset[@name="' . $name . '"]/field | //field[@fieldset="' . $name . '"]');
 
 		return $fields;
 	}

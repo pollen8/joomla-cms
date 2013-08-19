@@ -10,9 +10,9 @@
 defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
-JHtml::_('behavior.tooltip');
 JHtml::_('behavior.calendar');
 JHtml::_('behavior.formvalidation');
+JHtml::_('formbehavior.chosen', 'select');
 
 // Create shortcut to parameters.
 $params = $this->state->get('params');
@@ -94,7 +94,7 @@ if (!$editoroptions)
 
 					<?php echo $this->form->getInput('articletext'); ?>
 				</div>
-				<?php if ($params->get('show_urls_images_frontend')) : ?>
+				<?php if ($params->get('show_urls_images_frontend')): ?>
 				<div class="tab-pane" id="images">
 					<div class="control-group">
 						<div class="control-label">
@@ -232,6 +232,15 @@ if (!$editoroptions)
 							<?php echo $this->form->getInput('catid'); ?>
 						</div>
 					</div>
+					<div class="control-group">
+						<div class="control-label">
+							<?php echo $this->form->getLabel('tags'); ?>
+						</div>
+						<div class="controls">
+							<?php echo $this->form->getInput('tags'); ?>
+						</div>
+					</div>
+
 					<div class="control-group">
 						<div class="control-label">
 							<?php echo $this->form->getLabel('created_by_alias'); ?>

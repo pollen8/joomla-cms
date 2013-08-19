@@ -108,6 +108,14 @@ abstract class JFormField
 	protected $multiple = false;
 
 	/**
+	 * Allows extensions to create repeat elements
+	 * 
+	 * @var    mixed
+	 * @since  CMS 3.1.5
+	 */
+	public $repeat = false;
+
+	/**
 	 * The name of the form field.
 	 *
 	 * @var    string
@@ -184,7 +192,7 @@ abstract class JFormField
 	/**
 	 * The string used for generated fields names
 	 *
-	 * @var    integer
+	 * @var    string
 	 * @since  11.1
 	 */
 	protected static $generated_fieldname = '__field';
@@ -322,6 +330,7 @@ abstract class JFormField
 		$class = (string) $element['class'];
 		$id = (string) $element['id'];
 		$multiple = (string) $element['multiple'];
+		$repeat = (string) $element['repeat'];
 		$name = (string) $element['name'];
 		$required = (string) $element['required'];
 
@@ -341,12 +350,15 @@ abstract class JFormField
 			}
 			else
 			{
-				$this->element->addAttribute('class', 'required');
+				$this->element['class'] = 'required';
 			}
 		}
 
 		// Set the multiple values option.
 		$this->multiple = ($multiple == 'true' || $multiple == 'multiple');
+
+		// Alow for repeatable elements
+		$this->repeat = ($repeat == 'true' || $repeat == 'multiple' || $this->form->repeat == 1);
 
 		// Allow for field classes to force the multiple values option.
 		if (isset($this->forceMultiple))
@@ -380,6 +392,20 @@ abstract class JFormField
 		$this->labelClass = (string) $element['labelclass'];
 
 		return true;
+	}
+
+	/**
+	 * Simple method to set the value
+	 *
+	 * @param   mixed  $v  value
+	 *
+	 * @return  void
+	 * 
+	 * @since   CMS 3.1.5
+	 */
+	public function setValue($value)
+	{
+		$this->value = $value;
 	}
 
 	/**
@@ -428,6 +454,17 @@ abstract class JFormField
 
 		// Clean up any invalid characters.
 		$id = preg_replace('#\W#', '_', $id);
+
+		// If this is a repeatable element, add the repeat count to the ID
+		if ($this->repeat)
+		{
+			$repeatCounter = empty($this->form->repeatCounter) ? 0 : $this->form->repeatCounter;
+			$id .= '-' . $repeatCounter;
+			if (get_class($this) === 'JFormFieldRadio')
+			{
+				$id .= '-';
+			}
+		}
 
 		return $id;
 	}
@@ -486,7 +523,7 @@ abstract class JFormField
 		$text = $this->translateLabel ? JText::_($text) : $text;
 
 		// Build the class for the label.
-		$class = !empty($this->description) ? 'hasTip' : '';
+		$class = !empty($this->description) ? 'hasTooltip' : '';
 		$class = $this->required == true ? $class . ' required' : $class;
 		$class = !empty($this->labelClass) ? $class . ' ' . $this->labelClass : $class;
 
@@ -496,11 +533,8 @@ abstract class JFormField
 		// If a description is specified, use it to build a tooltip.
 		if (!empty($this->description))
 		{
-			$label .= ' title="'
-				. htmlspecialchars(
-				trim($text, ':') . '::' . ($this->translateDescription ? JText::_($this->description) : $this->description),
-				ENT_COMPAT, 'UTF-8'
-			) . '"';
+			JHtml::_('bootstrap.tooltip');
+			$label .= ' title="' . JHtml::tooltipText(trim($text, ':'), JText::_($this->description), 0) . '"';
 		}
 
 		// Add the label text and closing tag.
@@ -527,6 +561,9 @@ abstract class JFormField
 	 */
 	protected function getName($fieldName)
 	{
+		// To support repeated element, extensions can set this in plugin->onRenderSettings
+		$repeatCounter = empty($this->form->repeatCounter) ? 0 : $this->form->repeatCounter;
+
 		$name = '';
 
 		// If there is a form control set for the attached form add it first.
@@ -570,7 +607,20 @@ abstract class JFormField
 		// If the field should support multiple values add the final array segment.
 		if ($this->multiple)
 		{
-			$name .= '[]';
+			switch (strtolower((string) $this->element['type']))
+			{
+				case 'text':
+				case 'textarea':
+				case 'email':
+				case 'password':
+				case 'radio':
+				case 'calendar':
+				case 'editor':
+				case 'hidden':
+					break;
+				default:
+					$name .= '[]';
+			}
 		}
 
 		return $name;

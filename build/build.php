@@ -28,11 +28,11 @@ umask(022);
 
 // Set version for each build
 // Version is first 2 digits (like '1.7', '2.5', or '3.0')
-$version = '3.0';
+$version = '3.1';
 
 // Set release for each build
 // Release is third digit (like '0', '1', or '2')
-$release = '3';
+$release = '5';
 
 // Set path to git binary (e.g., /usr/local/git/bin/git or /urs/bin/git)
 $gitPath = '/usr/bin/git';
@@ -75,6 +75,7 @@ echo "Create list of changed files from git repository.\n";
 // Note: If we add new top-level directories or files, be sure to include them here.
 $filesArray = array(
 		"administrator/index.php\n" => true,
+		"bin/index.html\n" => true,
 		"cache/index.html\n" => true,
 		"cli/index.html\n" => true,
 		"components/index.html\n" => true,
@@ -93,7 +94,7 @@ $filesArray = array(
 		"index.php\n" => true,
 		"LICENSE.txt\n" => true,
 		"README.txt\n" => true,
-		"robots.txt\n" => true,
+		"robots.txt.dist\n" => true,
 		"web.config.txt\n" => true,
 		"joomla.xml\n" => true,
 );
@@ -114,8 +115,9 @@ for($num=$release-1; $num >= 0; $num--) {
 	// Loop through and add all files except: tests, installation, build, .git, or docs
 	foreach ($files AS $file)
 	{
-		if (substr($file, 2, 5) != 'tests' && substr($file, 2, 12) != 'installation' && substr($file,2,5) != 'build'
-		&& substr($file, 2, 4) != '.git' && substr($file, 2, 4) != 'docs' )
+		if (substr($file, 2, 5) != 'tests' && substr($file, 2, 12) != 'installation' && substr($file, 2, 5) != 'build'
+		&& substr($file, 2, 4) != '.git' && substr($file, 2, 4) != 'docs' && substr($file, 2, 7) != '.travis'
+		&& substr($file, 2, 6) != 'travis' && substr($file, 2, 7) != 'phpunit' && substr($file, -3) != '.md')
 		{
 			// Don't add deleted files to the list
 			if (substr($file, 0, 1) != 'D')
@@ -143,7 +145,7 @@ for($num=$release-1; $num >= 0; $num--) {
 
 		continue;
 	}
-	
+
 	$fromName = $num == 0 ? 'x' : $num;
 	// Create the diff archive packages using the file name list.
 	system('tar --create --bzip2 --no-recursion --directory '.$full.' --file packages'.$version.'/Joomla_'.$version.'.'.$fromName.'_to_'.$full.'-Stable-Patch_Package.tar.bz2 --files-from diffconvert/'.$version.'.'.$num . '> /dev/null');
@@ -156,7 +158,11 @@ for($num=$release-1; $num >= 0; $num--) {
 
 // Delete the directories we exclude from the packages (tests, docs, build).
 echo "Delete folders not included in packages.\n";
-system('rm -rf '.$full.'/tests ' . $full.'/docs ' . $full.'.gitignore ' . $full . '/build ' . $full . '/build.xml ');
+$doNotPackage = array('tests', 'docs', '.gitignore', '.travis.yml', 'build', 'build.xml', 'phpunit.xml.dist', 'travisci-phpunit.xml', 'README.md', 'CONTRIBUTING.md');
+foreach ($doNotPackage as $removeFile)
+{
+	system('rm -rf ' . $full . '/' . $removeFile);
+}
 
 // Recreate empty directories before creating new archives.
 system('mkdir packages_full'.$full);

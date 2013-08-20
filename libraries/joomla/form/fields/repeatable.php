@@ -102,7 +102,6 @@ class JFormFieldRepeatable extends JFormField
 
 		$document = JFactory::getDocument();
 		$document->addScriptDeclaration($script);
-//$document->addScript(JUri::root() . 'media/cms/js/repeatable.js');
 
 		$icon = $this->element['icon'] ? '<i class="icon-' . $this->element['icon'] . '"></i> ' : '';
 		$str[] = '<button class="btn" id="' . $modalid . '_button" data-modal="' . $modalid . '">' . $icon . JText::_('JLIB_FORM_BUTTON_SELECT') . '</button>';
@@ -113,7 +112,7 @@ class JFormFieldRepeatable extends JFormField
 		}
 
 		$value = htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8');
-		$str[] = '<input type="" name="' . $this->name . '" id="' . $this->id . '" value="' . $value . '" />';
+		$str[] = '<input type="hidden" name="' . $this->name . '" id="' . $this->id . '" value="' . $value . '" />';
 
 		JText::script('JAPPLY');
 		JText::script('JCANCEL');

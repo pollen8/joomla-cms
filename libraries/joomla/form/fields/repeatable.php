@@ -1,11 +1,12 @@
 <?php
 /**
- * Display a json loaded window with a repeatble set of sub fields
+ * Display a json loaded window with a repeatable set of sub fields
  *
- * @package     Joomla
+ * @package     Joomla.Libraries
  * @subpackage  Form
- * @copyright   Copyright (C) 2005-2013 fabrikar.com - All rights reserved.
- * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
+ *
+ * @copyright   Copyright (C) 2005 - 2013 Open Source Matters, Inc. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE
  */
 
 // No direct access
@@ -20,7 +21,6 @@ jimport('joomla.form.formfield');
  * @subpackage  Form
  * @since       1.6
  */
-
 class JFormFieldRepeatable extends JFormField
 {
 	/**
@@ -44,21 +44,21 @@ class JFormFieldRepeatable extends JFormField
 		// Initialize variables.
 		$app = JFactory::getApplication();
 		$document = JFactory::getDocument();
-		JHtml::stylesheet('administrator/components/com_fabrik/views/fabrikadmin.css');
+		$options = array();
 		$subForm = new JForm($this->name, array('control' => 'jform'));
 		$xml = $this->element->children()->asXML();
 		$subForm->load($xml);
 
-		// Needed for repeating modals in gmaps viz
+		// Needed for repeating modals in gmaps
 		$subForm->repeatCounter = (int) @$this->form->repeatCounter;
 		$input = $app->input;
 		$children = $this->element->children();
 
 		$subForm->setFields($children);
 
-		$str = array();
 		$modalid = $this->id . '_modal';
 
+		$str = array();
 		$str[] = '<div id="' . $modalid . '" style="display:none">';
 		$str[] = '<table class="adminlist ' . $this->element['class'] . ' table table-striped">';
 		$str[] = '<thead><tr>';
@@ -102,6 +102,7 @@ class JFormFieldRepeatable extends JFormField
 
 		$document = JFactory::getDocument();
 		$document->addScriptDeclaration($script);
+//$document->addScript(JUri::root() . 'media/cms/js/repeatable.js');
 
 		$icon = $this->element['icon'] ? '<i class="icon-' . $this->element['icon'] . '"></i> ' : '';
 		$str[] = '<button class="btn" id="' . $modalid . '_button" data-modal="' . $modalid . '">' . $icon . JText::_('JLIB_FORM_BUTTON_SELECT') . '</button>';
@@ -110,6 +111,7 @@ class JFormFieldRepeatable extends JFormField
 		{
 			$this->value = array_shift($this->value);
 		}
+
 		$value = htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8');
 		$str[] = '<input type="" name="' . $this->name . '" id="' . $this->id . '" value="' . $value . '" />';
 
@@ -117,5 +119,4 @@ class JFormFieldRepeatable extends JFormField
 		JText::script('JCANCEL');
 		return implode("\n", $str);
 	}
-
 }

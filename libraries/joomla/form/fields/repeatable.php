@@ -44,14 +44,12 @@ class JFormFieldRepeatable extends JFormField
 		// Initialize variables.
 		$app = JFactory::getApplication();
 		$document = JFactory::getDocument();
-		$options = array();
 		$subForm = new JForm($this->name, array('control' => 'jform'));
 		$xml = $this->element->children()->asXML();
 		$subForm->load($xml);
 
 		// Needed for repeating modals in gmaps
 		$subForm->repeatCounter = (int) @$this->form->repeatCounter;
-		$input = $app->input;
 		$children = $this->element->children();
 
 		$subForm->setFields($children);
@@ -60,7 +58,7 @@ class JFormFieldRepeatable extends JFormField
 
 		$str = array();
 		$str[] = '<div id="' . $modalid . '" style="display:none">';
-		$str[] = '<table class="adminlist ' . $this->element['class'] . ' table table-striped">';
+		$str[] = '<table id="' . $modalid . '_table" class="adminlist ' . $this->element['class'] . ' table table-striped">';
 		$str[] = '<thead><tr>';
 		$names = array();
 		$attributes = $this->element->attributes();
@@ -92,19 +90,22 @@ class JFormFieldRepeatable extends JFormField
 
 		$names = json_encode($names);
 
-		JHTML::_('script', 'system/repeatable.js', true, true);
+		JHtml::_('script', 'system/repeatable.js', true, true);
+
+		// If a maximum value isn't set then we'll make the maximum amount of cells a large number
+		$maximum = $this->element['maximum'] ? (int) $this->element['maximum'] : '999';
 
 		$script = "(function ($){
 			$(document).ready(function (){
-				var repeatable = new $.JRepeatable('$modalid', $names, '$this->id');
+				var repeatable = new $.JRepeatable('$modalid', $names, '$this->id', '$maximum');
 			});
 		})(jQuery);";
 
-		$document = JFactory::getDocument();
 		$document->addScriptDeclaration($script);
 
+		$select = (string) $this->element['select'] ? JText::_((string) $this->element['select']) : JText::_('JLIB_FORM_BUTTON_SELECT');
 		$icon = $this->element['icon'] ? '<i class="icon-' . $this->element['icon'] . '"></i> ' : '';
-		$str[] = '<button class="btn" id="' . $modalid . '_button" data-modal="' . $modalid . '">' . $icon . JText::_('JLIB_FORM_BUTTON_SELECT') . '</button>';
+		$str[] = '<button class="btn" id="' . $modalid . '_button" data-modal="' . $modalid . '">' . $icon . $select . '</button>';
 
 		if (is_array($this->value))
 		{

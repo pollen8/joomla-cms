@@ -21,9 +21,26 @@
 						size="30"
 						type="field"
 					/>
+					
+					<field name="checkx"
+						label="checkx"
+						description="test"
+						type="checkboxes" >
+						<option value="1">one</option>
+						<option value="2">two</option>
+					</field>
+					
 				</fieldset>
 			</fields>
 		</field>
+		
+		<field name="checkx3"
+						label="checkx"
+						description="test"
+						type="checkboxes" >
+						<option value="1">one</option>
+						<option value="2">two</option>
+					</field>
 			
 		<field name="name" type="text" class="inputbox"
 			size="40" label="COM_BANNERS_FIELD_NAME_LABEL"

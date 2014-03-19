@@ -156,24 +156,25 @@ abstract class JHtmlTag
 	 *
 	 * @param   string   $selector     DOM id of the tag field
 	 * @param   boolean  $allowCustom  Flag to allow custom values
+	 * @param   array    $opts         Chosen options
 	 *
 	 * @return  void
 	 *
 	 * @since   3.1
 	 */
-	public static function ajaxfield($selector='#jform_tags', $allowCustom = true)
+	public static function ajaxfield($selector='#jform_tags', $allowCustom = true, $opts = array())
 	{
 		// Tags field ajax
-		$chosenAjaxSettings = new JRegistry(
-			array(
-				'selector'    => $selector,
-				'type'        => 'GET',
-				'url'         => JUri::root() . 'index.php?option=com_tags&task=tags.searchAjax',
-				'dataType'    => 'json',
-				'jsonTermKey' => 'like'
-			)
+		$defaultOpts = array(
+			'selector'    => $selector,
+			'type'        => 'GET',
+			'url'         => JUri::root() . 'index.php?option=com_tags&task=tags.searchAjax',
+			'dataType'    => 'json',
+			'jsonTermKey' => 'like'
 		);
-		JHtml::_('formbehavior.ajaxchosen', $chosenAjaxSettings);
+		$opts = array_merge($defaultOpts, $opts);
+		$chosenAjaxSettings = new JRegistry($opts);
+		JHtml::_('formbehavior.ajaxchosen', $chosenAjaxSettings, true);
 
 		// Allow custom values ?
 		if ($allowCustom)

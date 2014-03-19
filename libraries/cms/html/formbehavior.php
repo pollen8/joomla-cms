@@ -116,7 +116,9 @@ abstract class JHtmlFormbehavior
 			JHtml::_('jquery.framework');
 
 			// Requires chosen to work
-			static::chosen($selector, $debug);
+			$chosenOpts = array();
+			$chosenOpts['max_selected_options'] = $options->get('max_selected_options', null);
+			static::chosen($selector, $debug, $chosenOpts);
 
 			JHtml::_('script', 'jui/ajax-chosen.min.js', false, true, false, false, $debug);
 			JFactory::getDocument()->addScriptDeclaration("

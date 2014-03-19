@@ -74,7 +74,15 @@ class JFormFieldTag extends JFormFieldList
 			$cssId = '#' . $this->getId($id, $this->element['name']);
 
 			// Load the ajax-chosen customised field
-			JHtml::_('tag.ajaxfield', $cssId, $this->allowCustom());
+			$opts = array();
+			$max = (string) $this->element['max_selected_options'];
+
+			if ($max !== '')
+			{
+				$opts['max_selected_options'] = $max;
+			}
+
+			JHtml::_('tag.ajaxfield', $cssId, $this->allowCustom(), $opts);
 		}
 
 		if (!is_array($this->value) && !empty($this->value))

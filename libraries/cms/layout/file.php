@@ -118,7 +118,7 @@ class JLayoutFile extends JLayoutBase
 			$this->addDebugMessage('<strong>Layout:</strong> ' . $this->layoutId);
 
 			// Refresh paths
-			$this->refreshIncludePaths();
+			$this->refreshIncludePaths(false);
 
 			$this->addDebugMessage('<strong>Include Paths:</strong> ' . print_r($this->includePaths, true));
 
@@ -354,14 +354,19 @@ class JLayoutFile extends JLayoutBase
 	/**
 	 * Refresh the list of include paths
 	 *
+	 * @param   boolean  $clear  Reset includePaths to an empty array
+	 *
 	 * @return  void
 	 *
 	 * @since   3.2
 	 */
-	protected function refreshIncludePaths()
+	protected function refreshIncludePaths($clear = true)
 	{
 		// Reset includePaths
-		$this->includePaths = array();
+		if ($clear)
+		{
+			$this->includePaths = array();
+		}
 
 		// (1 - lower priority) Frontend base layouts
 		$this->addIncludePaths(JPATH_ROOT . '/layouts');
